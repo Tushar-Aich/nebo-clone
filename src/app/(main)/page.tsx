@@ -1,9 +1,13 @@
 "use client"
 
+import CTA from '@/components/CTA'
+import Features from '@/components/Features'
+import Footer from '@/components/Footer'
 import Problem from '@/components/Problem'
 import { Button } from '@/components/ui/button'
 import RotatingText from '@/components/ui/RotatingText'
 import SplitText from '@/components/ui/SplitText'
+import UseCase from '@/components/UseCase'
 import { MoveRight } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
@@ -71,8 +75,9 @@ const Home = () => {
             </Button>
             <Button className='text-xl font-semibold font-mono px-4 py-3'>
               <Link
-                href="#usecases"
+                href="#usecase"
                 className='flex gap-2 items-center'
+                scroll={true}
               >
                 Know Use Cases <MoveRight />
               </Link>
@@ -81,6 +86,10 @@ const Home = () => {
           <h1 className='text-muted-foreground font-mono'>No credit card required. Free forever plan available.</h1>
       </div>
       <Problem />
+      <Features />
+      <UseCase />
+      <CTA />
+      <Footer />
     </div>
   )
 }
