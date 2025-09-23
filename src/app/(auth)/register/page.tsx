@@ -15,7 +15,7 @@ import axios from 'axios'
 const Register = () => {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-    const form = useForm<z.infer<typeof RegisterSchema>>({
+  const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
       username: "",
