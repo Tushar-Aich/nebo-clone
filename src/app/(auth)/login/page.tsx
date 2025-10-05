@@ -14,9 +14,9 @@ import { IconBrandGoogleFilled, IconBrandGithubFilled } from '@tabler/icons-reac
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
+import Image from 'next/image'
 
 const Register = () => {
-
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -36,7 +36,7 @@ const Register = () => {
         email: data.email,
         password: data.password
       })
-      if(result?.url) router.push('/home');
+      if(result?.url) router.push('/library');
     } catch (error: any) {
       throw new Error(error)
     } finally {
@@ -44,11 +44,19 @@ const Register = () => {
     }
   }
 
+  const logo_url = process.env.LOGO_URL!;
+
   return (
     <div className='h-screen w-screen flex justify-center items-center'>
         <Card className='flex flex-col items-center px-5 py-8 overflow-hidden'>
             <CardTitle className='flex items-center gap-4'>
-                <img src="Scriblio.png" alt="" className='h-16 w-16 rounded-lg'/>
+                <Image 
+                  src="/Scriblio.png"
+                  height={64}
+                  width={64}
+                  alt='logo'
+                  className='rounded-lg'
+                />
                 <h1 className='text-5xl font-bold font-serif'>Scriblio</h1>
             </CardTitle>
             <CardContent>

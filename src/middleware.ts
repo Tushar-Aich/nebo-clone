@@ -10,12 +10,12 @@ export default auth((req) => {
     }
 
     if(isLoggedIn && ['/login', '/register', '/'].includes(pathname)) {
-        return NextResponse.redirect(new URL("/home", req.url))
+        return NextResponse.redirect(new URL("/library", req.url))
     }
 
     return NextResponse.next()
 })
 
 export const config = {
-    matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"]
+    matcher: ["/library", "/login", "/register", "/", "/graph", "/notes/:path*"]
 }

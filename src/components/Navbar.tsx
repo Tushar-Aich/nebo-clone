@@ -1,22 +1,24 @@
 "use client"
 
-import { GitFork, Home, Info, LibraryBig, NotebookPen } from 'lucide-react'
+import { GitFork, Info, LibraryBig, NotebookPen } from 'lucide-react'
 import React from 'react'
-import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, navigationMenuTriggerStyle } from './ui/navigation-menu'
+import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from './ui/navigation-menu'
 import Link from 'next/link'
 import ThemeToggle from './ThemeToggle'
 import { Button } from './ui/button'
 import { usePathname } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
+import { IconDoorExit } from '@tabler/icons-react'
 
 const links = [
-    { label: 'Home', href: '/home', icon: (<Home className='h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer' />) },
-    { label: 'Notes', href: '/notes', icon: (<NotebookPen className='h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer' />) },
     { label: 'Library', href: '/library', icon: (<LibraryBig className='h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer' />) },
+    { label: 'Notes', href: '/notes', icon: (<NotebookPen className='h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer' />) },
     { label: 'Graph', href: '/graph', icon: (<GitFork className='h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer' />) },
     { label: 'Help', href: 'help', icon: (<Info className='h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer' />) }
 ]
 
 const Navbar = () => {
+    const {data: session} = useSession()
     const pathname = usePathname()
   return (
     <>
@@ -33,7 +35,7 @@ const Navbar = () => {
         </NavigationMenu>
         <NavigationMenu>
             <NavigationMenuList>
-                <div className='flex space-x-3'>
+                <div className='flex space-x-8'>
                     {links.map((link) => (
                         <Link key={link.label} href={link.href} className={`hover:scale-110 hover:duration-300 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer link ${pathname === link.label ? 'active' : ''}`}>
                             {link.icon}
@@ -46,7 +48,15 @@ const Navbar = () => {
             <NavigationMenuList>
                 <div className='flex items-center space-x-2 pr-2 lg:space-x-5'>
                     <ThemeToggle />
-                    <Button className='font-semibold cursor-pointer'>Sign in</Button>
+                    {session ? (
+                        <Button onClick={() => signOut()} variant="ghost">
+                            <IconDoorExit className='h-5 w-5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 cursor-pointer' />
+                        </Button>
+                    ) : (
+                        <Button className='font-semibold cursor-pointer'>
+                            <Link href='/login'>Sign In</Link>
+                        </Button>
+                    )}
                 </div>
             </NavigationMenuList>
         </NavigationMenu>
@@ -78,7 +88,15 @@ const Navbar = () => {
             <NavigationMenuList>
                 <div className='flex items-center space-x-2 pr-2 lg:space-x-5'>
                     <ThemeToggle />
-                    <Button className='font-semibold cursor-pointer'>Sign in</Button>
+                    {session ? (
+                        <Button onClick={() => signOut()} className='font-semibold cursor-pointer'>
+                            Sign Out
+                        </Button>
+                    ) : (
+                        <Button className='font-semibold cursor-pointer'>
+                            <Link href='/login'>Sign In</Link>
+                        </Button>
+                    )}
                 </div>
             </NavigationMenuList>
         </NavigationMenu>

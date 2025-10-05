@@ -1,14 +1,15 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useMemo, MouseEvent } from "react"
 import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Search, Plus, Calendar, Tag } from "lucide-react"
+import { Search, Plus, Calendar, Tag, Trash, Loader2 } from "lucide-react"
 import { useDebounce } from "@/hooks/use-debounce"
 import { formatDistanceToNow } from "date-fns"
+import { toast } from "sonner"
 
 interface Note {
   _id: string
@@ -22,6 +23,7 @@ export default function LibraryClient() {
   const [notes, setNotes] = useState<Note[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(true)
+  const [isDeleting, setIsDeleting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
@@ -44,6 +46,7 @@ export default function LibraryClient() {
         }
 
         const data = await response.json()
+        console.log(data.data)
         setNotes(data.data)
       } catch (err) {
         setError("Failed to load notes. Please try again.")
@@ -97,6 +100,36 @@ export default function LibraryClient() {
 
     return groups
   }, [notes])
+
+  const handleDelete = async (noteId:string, event:MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
+    setIsDeleting(true)
+    try {
+      const response = await fetch(`/api/notes/${noteId}`, {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      if(!response.ok) throw new Error("Error deleting note!");
+
+      const data = await response.json()
+
+      setNotes(notes.filter((note) => {
+        return note._id !== data.data._id
+      }))
+
+      toast("Note deleted", {
+        description: "Your note has been deleted successfully.",
+      })
+    } catch (error) {
+      toast("Error", {
+        description: "Failed to delete note. Please try again.",
+      })
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   if (error) {
     return (
@@ -195,6 +228,17 @@ export default function LibraryClient() {
                         onClick={() => handleNoteClick(note._id)}
                       >
                         <CardHeader className="pb-3">
+                          <div className="relative">
+                            {isDeleting ? (
+                              <Button className="absolute right-2 bg-transparent border-2 border-muted-foreground hover:border-red-600 hover:bg-red-500 cursor-pointer group" variant="default" onClick={(event) => handleDelete(note._id, event)} disabled>
+                                <Loader2 className="text-muted-foreground group-hover:text-white animate-spin" />
+                              </Button>
+                            ) : (
+                              <Button className="absolute right-2 bg-transparent border-2 border-muted-foreground hover:border-red-600 hover:bg-red-500 cursor-pointer group" variant="default" onClick={(event) => handleDelete(note._id, event)}>
+                                <Trash className="text-muted-foreground group-hover:text-white" />
+                              </Button>
+                            )}
+                          </div>
                           <CardTitle className="text-base line-clamp-2">{note.title}</CardTitle>
                           <CardDescription className="flex items-center gap-1 text-xs">
                             <Calendar className="h-3 w-3" />
